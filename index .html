@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f7eee9">
+  <title>天然美容商品型錄</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            beauty: {
+              cream: '#fcf8f5',
+              blush: '#f4e5df',
+              rose: '#d9a99d',
+              terracotta: '#b96f61',
+              deep: '#63463f',
+              sage: '#9eaa91',
+              line: '#ead8d1',
+              gold: '#c69b69'
+            }
+          },
+          fontFamily: {
+            serif: ['"Noto Serif TC"', 'serif'],
+            sans: ['"Plus Jakarta Sans"', '"Noto Sans TC", sans-serif']
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: #fcf8f5; color: #63463f; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+    .leaf { position: fixed; top: -32px; z-index: 20; pointer-events: none; opacity: .32; color: #9eaa91; animation: leafFall linear forwards; }
+    .leaf::before { content: ''; display: block; width: 11px; height: 18px; background: currentColor; border-radius: 100% 0 100% 0; transform: rotate(35deg); }
+    @keyframes leafFall { 0% { transform: translate3d(0,-30px,0) rotate(0deg); } 50% { transform: translate3d(24px,52vh,0) rotate(150deg); } 100% { transform: translate3d(-18px,108vh,0) rotate(300deg); } }
+    .category-drawer { position: relative; background: linear-gradient(180deg, #f0e7f3 0%, #e2d1e8 100%); border-color: #d7c0df; transition: width .25s ease, transform .25s ease; }
+    .category-drawer .drawer-title { color: #65466f; }
+    .category-drawer .cat-btn { width: 100%; color: #65466f; background: rgba(255,255,255,.5); border: 1px solid rgba(158,122,169,.18); }
+    .category-drawer .cat-btn:hover { background: rgba(255,255,255,.9); }
+    .category-drawer .cat-btn.is-active { background: #8d609b; color: white; border-color: #8d609b; box-shadow: 0 5px 14px rgba(111,72,124,.2); }
+    .category-drawer .cat-btn.is-active span:last-child { color: rgba(255,255,255,.8); }
+    .category-panel.collapsed { width: 56px; }
+    .category-panel.collapsed .category-list,
+    .category-panel.collapsed .drawer-title { display: none; }
+    .category-panel.collapsed .drawer-header { justify-content: center; }
+    .drawer-arrow { width: 20px; height: 20px; transition: transform .25s ease; }
+    .category-panel.collapsed .drawer-arrow { transform: rotate(180deg); }
+    .drawer-toggle { position: absolute; top: 19px; right: -17px; z-index: 4; width: 36px; height: 36px; border: 2px solid #d7c0df; border-radius: 999px; background: #fff; color: #7b4f8b; box-shadow: 0 4px 12px rgba(83,52,96,.22); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; line-height: 1; cursor: pointer; }
+    .drawer-toggle:hover { background: #faf6fc; transform: scale(1.05); }
+    .category-section + .category-section { margin-top: 2.25rem; }
+    .category-section-heading { scroll-margin-top: 24px; }
+    .mobile-backdrop { display: none; }
+    @media (max-width: 767px) {
+      .category-panel { position: fixed; left: 0; top: 86px; bottom: 0; z-index: 40; width: min(82vw, 290px); border-radius: 0 1.25rem 1.25rem 0; padding: .85rem; overflow-y: auto; box-shadow: 12px 0 28px rgba(83,52,96,.18); }
+      .category-panel.collapsed { width: 54px; transform: translateX(calc(-100% + 54px)); }
+      .category-panel:not(.collapsed) + .mobile-backdrop { display: block; position: fixed; inset: 86px 0 0; z-index: 30; background: rgba(53,35,61,.24); }
+      .drawer-toggle { top: 18px; right: -17px; }
+      .category-list { display: flex; flex-direction: column; gap: .55rem; }
+      .category-list .cat-btn { min-width: 0; padding: .8rem; }
+      .category-list .cat-btn span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; } .leaf { display: none; } }
+  </style>
+</head>
+<body class="font-sans antialiased min-h-screen">
+  <!-- 裝飾植物：純 CSS，不需額外圖片，不增加網頁流量 -->
+  <div class="fixed left-0 bottom-0 pointer-events-none opacity-25 z-0 hidden sm:block" aria-hidden="true">
+    <div class="w-24 h-40 border-l-2 border-beauty-sage rounded-t-full rotate-12"></div>
+    <div class="absolute bottom-20 left-4 w-12 h-6 bg-beauty-sage rounded-full -rotate-35"></div>
+    <div class="absolute bottom-32 left-8 w-10 h-5 bg-beauty-sage rounded-full rotate-25"></div>
+  </div>
+  <div class="fixed right-0 top-36 pointer-events-none opacity-20 z-0 hidden md:block" aria-hidden="true">
+    <div class="w-20 h-56 border-r-2 border-beauty-sage rounded-t-full -rotate-12"></div>
+    <div class="absolute top-10 right-5 w-12 h-6 bg-beauty-sage rounded-full rotate-35"></div>
+    <div class="absolute top-28 right-8 w-10 h-5 bg-beauty-sage rounded-full -rotate-25"></div>
+  </div>
+
+  <header class="relative z-10 border-b border-beauty-line/80 bg-beauty-blush/85 backdrop-blur-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-full bg-beauty-terracotta text-white flex items-center justify-center font-serif font-bold shadow-sm">SP</div>
+        <div>
+          <h1 class="font-serif font-bold text-xl tracking-[.18em] text-beauty-deep">SWISS DERMA</h1>
+          <p class="text-[11px] tracking-[.22em] text-beauty-terracotta">天然養膚 · 溫柔呵護</p>
+        </div>
+      </div>
+      <div class="hidden sm:block text-xs text-beauty-terracotta border border-beauty-terracotta/35 rounded-full px-4 py-2 bg-white/55">植物萃取・安心保養</div>
+    </div>
+  </header>
+
+  <div class="relative z-10 max-w-7xl mx-auto w-full px-3 sm:px-6 py-4 sm:py-7">
+    <section class="mb-5 sm:mb-7 rounded-3xl border border-beauty-line bg-white/65 px-5 py-6 sm:px-8 sm:py-8 shadow-[0_12px_35px_rgba(145,96,80,.08)]">
+      <p class="text-xs tracking-[.28em] text-beauty-terracotta mb-2">BOTANICAL BEAUTY COLLECTION</p>
+      <h2 class="font-serif text-2xl sm:text-3xl font-bold text-beauty-deep">讓肌膚回到柔和、自然的狀態</h2>
+      <p class="mt-3 text-sm leading-7 text-beauty-deep/70 max-w-2xl">嚴選溫和配方與植萃成分，為日常保養留下一點舒服的餘裕。</p>
+    </section>
+
+    <div class="flex gap-4 md:gap-7 items-start">
+      <aside id="category-panel" class="category-panel category-drawer w-60 shrink-0 rounded-2xl border p-3 shadow-sm sticky top-5">
+        <div class="drawer-header flex items-center justify-between gap-3 px-3 py-2 mb-2">
+          <span class="drawer-title text-xs font-bold tracking-[.2em]">商品分類</span>
+        </div>
+        <nav id="category-bar" class="category-list flex flex-col gap-2" aria-label="商品分類"></nav>
+        <button id="category-toggle" type="button" onclick="toggleCategoryDrawer()" aria-expanded="true" aria-controls="category-bar" aria-label="收合商品分類" class="drawer-toggle"><svg class="drawer-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></button>
+      </aside>
+      <div class="mobile-backdrop" onclick="toggleCategoryDrawer()" aria-hidden="true"></div>
+
+      <main class="min-w-0 flex-1">
+        <div class="flex items-end justify-between gap-3 mb-5 border-b border-beauty-line pb-3">
+          <div>
+            <p class="text-[11px] tracking-[.2em] text-beauty-terracotta">OUR COLLECTION</p>
+            <h2 class="font-serif text-xl sm:text-2xl font-bold text-beauty-deep mt-1">商品系列</h2>
+          </div>
+          <span class="hidden sm:block text-xs text-beauty-deep/55">點選左側分類可快速前往</span>
+        </div>
+        <div id="loading-state" class="py-16 text-center text-sm text-beauty-deep/55">正在準備商品型錄…</div>
+        <div id="category-sections"></div>
+      </main>
+    </div>
+  </div>
+
+  <div id="product-modal" class="fixed inset-0 bg-beauty-deep/45 backdrop-blur-sm z-50 hidden items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true" aria-label="商品詳細內容">
+    <div class="bg-beauty-cream w-full max-w-2xl max-h-[92vh] rounded-t-3xl sm:rounded-3xl border border-beauty-line flex flex-col shadow-2xl overflow-hidden">
+      <div class="flex items-center justify-between px-5 sm:px-6 py-4 bg-beauty-blush border-b border-beauty-line shrink-0">
+        <h3 class="font-serif font-bold text-lg text-beauty-deep">商品詳細內容</h3>
+        <button onclick="closeModal()" aria-label="關閉" class="w-9 h-9 rounded-full bg-white/80 border border-beauty-line text-beauty-deep hover:bg-white">✕</button>
+      </div>
+      <div id="modal-content" class="overflow-y-auto p-5 sm:p-6 space-y-6"></div>
+      <div class="px-5 py-4 bg-beauty-blush border-t border-beauty-line text-xs text-beauty-deep/65">如需課程體驗或商品批發，歡迎預約洽詢</div>
+    </div>
+  </div>
+
+  <script>
+    // 請替換為您的 GAS Web App 網址；
+    const API_URL = 'https://script.google.com/macros/s/AKfycbwbFJa2f6AhYsUj787Dj1jUrgZhVdh68Pax0X_EPq11eCGBaUUCEvE1ylvoIEiJW-Le2w/exec';
+    const PROMO_CATEGORY = '限時促銷';
+    let allProducts = [];
+    // 左側分類是頁面定位導覽；右側會連續顯示所有分類
+    let categoryOrder = [];
+
+    const $ = id => document.getElementById(id);
+    const esc = value => String(value ?? '').replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
+
+    window.addEventListener('load', () => { fetchProducts(); startLeafAnimation(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+    $('product-modal').addEventListener('click', e => { if (e.target.id === 'product-modal') closeModal(); });
+
+    async function fetchProducts() {
+      try {
+        const res = await fetch(API_URL, { cache: 'no-store' });
+        if (!res.ok) throw new Error('API HTTP ' + res.status);
+        const data = await res.json();
+        allProducts = Array.isArray(data) ? data : [];
+        // 限時促銷永遠排最前面，其餘維持試算表順序
+        allProducts.sort((a, b) => (a.category === PROMO_CATEGORY ? -1 : 0) - (b.category === PROMO_CATEGORY ? -1 : 0));
+        buildCategories();
+        renderCategorySections();
+        filterCategory(PROMO_CATEGORY);
+      } catch (err) {
+        $('loading-state').classList.add('hidden');
+        $('category-sections').innerHTML = '<div class="py-16 text-center text-sm text-beauty-deep/60">目前無法載入商品，請稍後再試。</div>';
+        console.error('商品 API 載入失敗：', err);
+      }
+    }
+
+    function buildCategories() {
+      const counts = {};
+      allProducts.forEach(p => { const c = String(p.category || '未分類').trim(); counts[c] = (counts[c] || 0) + 1; });
+      document.querySelectorAll('.category-dynamic').forEach(el => el.remove());
+      // 不顯示「全部商品」；限時促銷固定存在並永遠排第一
+      const categories = Object.keys(counts).filter(cat => cat !== '全部商品' && cat !== '全部商品 ');
+      if (!categories.includes(PROMO_CATEGORY)) categories.unshift(PROMO_CATEGORY);
+      categories.sort((a, b) => a === PROMO_CATEGORY ? -1 : b === PROMO_CATEGORY ? 1 : 0);
+      categoryOrder = categories;
+      categories.forEach(cat => {
+        const btn = document.createElement('button');
+        btn.id = 'btn-cat-' + encodeURIComponent(cat);
+        btn.className = 'category-dynamic cat-btn shrink-0 text-left px-4 py-3 rounded-xl text-sm font-semibold flex items-center justify-between gap-5';
+        btn.onclick = () => filterCategory(cat);
+        btn.innerHTML = `<span>${esc(cat)}</span><span class="text-xs text-beauty-deep/55">${counts[cat] || 0}</span>`;
+        $('category-bar').appendChild(btn);
+      });
+    }
+
+    function filterCategory(cat) {
+      document.querySelectorAll('.cat-btn').forEach(btn => {
+        btn.classList.remove('is-active');
+      });
+      const active = $('btn-cat-' + encodeURIComponent(cat));
+      if (active) active.classList.add('is-active');
+      const section = $('category-section-' + encodeURIComponent(cat));
+      if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (window.matchMedia('(max-width: 767px)').matches && !$('category-panel').classList.contains('collapsed')) toggleCategoryDrawer();
+    }
+
+    function toggleCategoryDrawer() {
+      const panel = $('category-panel');
+      const toggle = $('category-toggle');
+      const collapsed = panel.classList.toggle('collapsed');
+      toggle.setAttribute('aria-expanded', String(!collapsed));
+    }
+
+    function renderCategorySections() {
+      $('loading-state').classList.add('hidden');
+      $('category-sections').innerHTML = categoryOrder.map(cat => {
+        const list = allProducts.filter(p => String(p.category || '').trim() === cat);
+        const cards = list.map(p => {
+        const image = p.coverImage || 'https://via.placeholder.com/600x848?text=No+Image';
+        const promo = String(p.category || '').trim() === PROMO_CATEGORY;
+        return `<article onclick="openModalByIndex(${allProducts.indexOf(p)})" class="bg-white/80 rounded-2xl border ${promo ? 'border-beauty-terracotta/70 ring-1 ring-beauty-terracotta/20' : 'border-beauty-line'} p-2.5 sm:p-4 shadow-[0_8px_25px_rgba(145,96,80,.07)] hover:shadow-lg transition cursor-pointer group">
+          <div class="relative w-full aspect-[210/297] rounded-xl bg-beauty-blush overflow-hidden mb-3">
+            <img src="${esc(image)}" alt="${esc(p.name)}" class="w-full h-full object-contain group-hover:scale-[1.02] transition-transform duration-300" loading="lazy">
+            <span class="absolute top-2 left-2 ${promo ? 'bg-beauty-terracotta' : 'bg-beauty-deep/75'} text-white text-[10px] font-bold px-2 py-1 rounded-full">${esc(p.category || '未分類')}</span>
+          </div>
+          <h3 class="font-bold text-sm sm:text-base text-beauty-deep group-hover:text-beauty-terracotta transition-colors">${esc(p.name)}</h3>
+          <div class="text-[11px] text-beauty-deep/55 mt-1 line-clamp-2 whitespace-pre-line">${esc(p.ingredients || '')}</div>
+          <div class="mt-3 pt-3 border-t border-beauty-line/70 flex items-center justify-between gap-2">
+            <span class="text-[10px] sm:text-xs font-semibold bg-beauty-blush text-beauty-deep/70 px-2 py-1 rounded">${esc(p.spec || '標準')}</span>
+            <span class="text-sm sm:text-lg font-bold text-beauty-terracotta">NT$ ${esc(p.price || '0')}</span>
+          </div>
+        </article>`;
+        }).join('');
+        return `<section id="category-section-${encodeURIComponent(cat)}" class="category-section category-section-heading">
+          <div class="flex items-center justify-between gap-3 mb-4 border-b border-beauty-line pb-3">
+            <div><p class="text-[11px] tracking-[.2em] text-beauty-terracotta">${cat === PROMO_CATEGORY ? 'SPECIAL OFFER' : 'COLLECTION'}</p><h2 class="font-serif text-xl sm:text-2xl font-bold text-beauty-deep mt-1">${esc(cat)}</h2></div>
+            <span class="text-xs text-beauty-deep/50">${list.length} 項商品</span>
+          </div>
+          ${cards ? `<div class="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5">${cards}</div>` : '<div class="rounded-2xl border border-dashed border-beauty-line py-12 text-center text-sm text-beauty-deep/55">目前尚未建立此分類商品。</div>'}
+        </section>`;
+      }).join('');
+    }
+
+    function parseYouTubeId(url) {
+      if (!url) return null;
+      const match = String(url).match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/);
+      return match ? match[1] : null;
+    }
+
+    function openModalByIndex(index) { openModal(allProducts[index]); }
+    function openModal(p) {
+      if (!p) return;
+      const cover = p.coverImage || 'https://via.placeholder.com/800x1131?text=No+Image';
+      const ytId = parseYouTubeId(p.videoUrl);
+      const ingredientsSection = p.ingredients && String(p.ingredients).trim() ? `<div class="bg-white p-4 rounded-xl border border-beauty-line"><h4 class="font-bold text-sm text-beauty-deep mb-2">主要成份</h4><p class="text-sm text-beauty-deep/70 leading-7 whitespace-pre-line">${esc(p.ingredients)}</p></div>` : '';
+      const videoSection = ytId ? `<div><h4 class="font-bold text-sm text-beauty-deep mb-3">示範介紹影片</h4><div class="w-full aspect-video rounded-xl overflow-hidden border border-beauty-line bg-black"><iframe class="w-full h-full" src="https://www.youtube.com/embed/${esc(ytId)}" title="商品介紹影片" loading="lazy" allowfullscreen></iframe></div></div>` : '';
+      const images = Array.isArray(p.descImages) ? p.descImages.filter(Boolean) : [];
+      const descSection = images.length ? `<div><h4 class="font-bold text-sm text-beauty-deep mb-3">詳細圖文介紹</h4><div class="space-y-3">${images.map(img => `<img src="${esc(img)}" alt="${esc(p.name)} 說明圖" class="w-full h-auto object-contain rounded-xl border border-beauty-line" loading="lazy">`).join('')}</div></div>` : '';
+      $('modal-content').innerHTML = `<div class="w-full rounded-xl overflow-hidden bg-beauty-blush border border-beauty-line"><img src="${esc(cover)}" alt="${esc(p.name)}" class="w-full h-auto max-h-[70vh] object-contain"></div><div class="border-b border-beauty-line pb-4"><span class="text-xs font-bold text-beauty-terracotta">${esc(p.category || '未分類')}</span><h2 class="text-2xl font-serif font-bold text-beauty-deep mt-1">${esc(p.name)}</h2><div class="flex items-baseline gap-4 mt-3"><span class="text-2xl font-bold text-beauty-terracotta">NT$ ${esc(p.price || '0')}</span><span class="text-sm text-beauty-deep/60 bg-beauty-blush px-2.5 py-1 rounded-full">${esc(p.spec || '標準')}</span></div></div>${ingredientsSection}${videoSection}${descSection}`;
+      $('product-modal').classList.remove('hidden');
+      $('product-modal').classList.add('flex');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeModal() { $('product-modal').classList.add('hidden'); $('product-modal').classList.remove('flex'); document.body.style.overflow = ''; }
+
+    // 低數量、低頻率落葉；手機與「減少動態」設定會自動停用
+    function startLeafAnimation() {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const isMobile = window.matchMedia('(max-width: 640px)').matches;
+      const maxLeaves = isMobile ? 2 : 4;
+      setInterval(() => {
+        if (document.querySelectorAll('.leaf').length >= maxLeaves) return;
+        const leaf = document.createElement('span');
+        leaf.className = 'leaf';
+        leaf.style.left = Math.random() * 100 + 'vw';
+        leaf.style.animationDuration = (8 + Math.random() * 5) + 's';
+        leaf.style.transform = `scale(${0.65 + Math.random() * .4})`;
+        document.body.appendChild(leaf);
+        setTimeout(() => leaf.remove(), 14000);
+      }, isMobile ? 6500 : 4200);
+    }
+  </script>
+</body>
+</html>
